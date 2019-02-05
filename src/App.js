@@ -10,8 +10,8 @@ import BookList from './components/BookList';
 import SearchBooks from './components/SearchBooks';
 import { mockBooks } from './api/MockBooks';
 import * as BooksAPI from './api/BooksAPI';
-import { ShelvesEnum, UsedAPI, Shelves } from './api/myreadsConfig';
-
+import { ShelvesEnum, UsedAPI } from './api/myreadsConfig';
+import { mapAllBooks, getShelf } from './api/BooksAPIModel';
 /**
  * Class App: Main Component, which is used as top component of this Webapp.
  */
@@ -20,32 +20,6 @@ class App extends Component {
 
   state = {
     books: [],
-  }
-
-  getShelfId = (shelf) => {
-
-    const shelvesThere = Shelves.filter((c) => {
-      return (c.shelf === shelf)
-    })
-    if (shelvesThere.length === 1) {
-      return shelvesThere[0].shelfId;
-    }
-    else {
-      return ShelvesEnum.NONE;
-    }
-  }
-
-  getShelf = (shelfId) => {
-
-    const shelvesThere = Shelves.filter((c) => {
-      return (c.shelfId === shelfId)
-    })
-    if (shelvesThere.length === 1) {
-      return shelvesThere[0].shelf;
-    }
-    else {
-      return shelvesThere[3].shelf;
-    }
   }
 
   addBookToShelf = (newShelfId, book) => {
@@ -78,7 +52,7 @@ class App extends Component {
 
     // Using BooksAPI
     if (UsedAPI.src === "BooksAPI") {
-      book.shelf = this.getShelf(newShelfId);
+      book.shelf = getShelf(newShelfId);
       BooksAPI.update(book, book.shelf)
         .then((result) => {
           //console.log(result);
@@ -104,20 +78,10 @@ class App extends Component {
       // Read all books from Udacity API
       BooksAPI.getAll()
         .then((results) => {
-          let allBooks = results.map((result) => (
-            {
-              "shelfId": this.getShelfId(result.shelf),
-              "shelf": result.shelf,
-              "id": result.id,
-              "title": result.title,
-              "authors": result.authors,
-              "thumbnail": `url(${result.imageLinks.thumbnail})`
-            }
-          ));
+          let allBooks = mapAllBooks(results);
           this.setState(() => ({
             books: allBooks
           }))
-
         })
     }
   }
@@ -153,7 +117,7 @@ class App extends Component {
             <SearchBooks
               updateShelf={(newShelfId, book) => {
                 this._isMounted && this.updateShelf(newShelfId, book)
-                history.push('/')
+                // history.push('/') more then one book selectable
               }}
               books={this.state.books}
             />

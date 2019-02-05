@@ -1,76 +1,74 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import '../App.css'
 import Book from './Book';
 import { ShelvesEnum } from '../api/myreadsConfig';
 
-class BookList extends Component {
+const getShelfBooks = (props, shelfId) => {
+    const shelveBooks = shelfId === ShelvesEnum.ALLBOOKS
+        ? props.books
+        : props.books.filter((c) => (
+            c.shelfId === shelfId
+        ));
+    return shelveBooks;
+}
 
-    static propTypes = {
-        books: PropTypes.array.isRequired,
-    }
+function BookList(props) {
 
-    getShelfBooks = (shelfId) => {
-        const shelveBooks = shelfId === ShelvesEnum.ALLBOOKS
-            ? this.props.books
-            : this.props.books.filter((c) => (
-                c.shelfId === shelfId
-            ));
-        return shelveBooks;
-    }
+    const { updateShelf } = props;
 
-    render() {
+    const currentBooks = getShelfBooks(props, ShelvesEnum.CURRENTLYREADING);
+    const wantBooks = getShelfBooks(props, ShelvesEnum.WANTTOREAD);
+    const readBooks = getShelfBooks(props, ShelvesEnum.READ);
 
-        const { updateShelf } = this.props;
-
-        const currentBooks = this.getShelfBooks(ShelvesEnum.CURRENTLYREADING);
-        const wantBooks = this.getShelfBooks(ShelvesEnum.WANTTOREAD);
-        const readBooks = this.getShelfBooks(ShelvesEnum.READ);
-
-        return (
-            <div className="bookshelf">
-                <h2 className="bookshelf-title">{ShelvesEnum.properties[ShelvesEnum.CURRENTLYREADING].title}</h2>
-                <div className="bookshelf-books">
-                    <ol className="books-grid">
-                        {currentBooks.map((book) => (
-                            <li key={book.id}>
-                                <Book
-                                    updateShelf={updateShelf}
-                                    book={book}
-                                />
-                            </li>
-                        ))}
-                    </ol>
-                </div>
-                <h2 className="bookshelf-title">{ShelvesEnum.properties[ShelvesEnum.WANTTOREAD].title}</h2>
-                <div className="bookshelf-books">
-                    <ol className="books-grid">
-                        {wantBooks.map((book) => (
-                            <li key={book.id}>
-                                <Book
-                                    updateShelf={updateShelf}
-                                    book={book}
-                                />
-                            </li>
-                        ))}
-                    </ol>
-                </div>
-                <h2 className="bookshelf-title">{ShelvesEnum.properties[ShelvesEnum.READ].title}</h2>
-                <div className="bookshelf-books">
-                    <ol className="books-grid">
-                        {readBooks.map((book) => (
-                            <li key={book.id}>
-                                <Book
-                                    updateShelf={updateShelf}
-                                    book={book}
-                                />
-                            </li>
-                        ))}
-                    </ol>
-                </div>
+    return (
+        <div className="bookshelf">
+            <h2 className="bookshelf-title">{ShelvesEnum.properties[ShelvesEnum.CURRENTLYREADING].title}</h2>
+            <div className="bookshelf-books">
+                <ol className="books-grid">
+                    {currentBooks.map((book) => (
+                        <li key={book.id}>
+                            <Book
+                                updateShelf={updateShelf}
+                                book={book}
+                            />
+                        </li>
+                    ))}
+                </ol>
             </div>
-        );
-    }
+            <h2 className="bookshelf-title">{ShelvesEnum.properties[ShelvesEnum.WANTTOREAD].title}</h2>
+            <div className="bookshelf-books">
+                <ol className="books-grid">
+                    {wantBooks.map((book) => (
+                        <li key={book.id}>
+                            <Book
+                                updateShelf={updateShelf}
+                                book={book}
+                            />
+                        </li>
+                    ))}
+                </ol>
+            </div>
+            <h2 className="bookshelf-title">{ShelvesEnum.properties[ShelvesEnum.READ].title}</h2>
+            <div className="bookshelf-books">
+                <ol className="books-grid">
+                    {readBooks.map((book) => (
+                        <li key={book.id}>
+                            <Book
+                                updateShelf={updateShelf}
+                                book={book}
+                            />
+                        </li>
+                    ))}
+                </ol>
+            </div>
+        </div>
+    );
+
+}
+
+BookList.propTypes = {
+    books: PropTypes.array.isRequired,
 }
 
 export default BookList;

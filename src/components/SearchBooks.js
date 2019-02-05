@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
 import '../App.css';
 import * as BooksAPI from '../api/BooksAPI';
-import { ShelvesEnum, UsedAPI } from '../api/myreadsConfig';
+import { UsedAPI } from '../api/myreadsConfig';
 import Book from './Book';
+import { mapSearchedBooks } from '../api/BooksAPIModel';
 
 class SearchBooks extends Component {
 
@@ -24,19 +25,6 @@ class SearchBooks extends Component {
         }));
     }
 
-    getShelfId = (bookId) => {
-
-        const bookThere = this.props.books.filter((c) => {
-            return (c.id === bookId)
-        })
-        if (bookThere.length === 1) {
-            return bookThere[0].shelfId;
-        }
-        else {
-            return ShelvesEnum.NONE;
-        }
-    }
-
     searchBooks = () => {
 
         try {
@@ -44,15 +32,9 @@ class SearchBooks extends Component {
             BooksAPI.search(this.state.query, UsedAPI.maxResults)
                 .then((results) => {
                     // console.log(JSON.stringify(results));
-                    let searchdedBooks = results.map((searchedBook) => (
-                        {
-                            "shelfId": this.getShelfId(searchedBook.id),
-                            "id": searchedBook.id,
-                            "title": searchedBook.title,
-                            "authors": searchedBook.authors,
-                            "thumbnail": `url(${searchedBook.imageLinks.thumbnail})`
-                        }
-                    ));
+
+                    let searchdedBooks = mapSearchedBooks(this.props.books, results);
+
                     if (this.state.query === '') {
                         this.setState(() => ({
                             searchdedBooks: []
