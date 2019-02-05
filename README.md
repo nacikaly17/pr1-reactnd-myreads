@@ -45,6 +45,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 └── src
     ├── api # Files for the data source api . APIs local and Udacity backend server. 
     │   ├── BooksAPI.js # A JavaScript API for the provided Udacity backend. Instructions for the methods are below.
+    │   ├── BooksAPIModel.js # functions  for filtering and mapping of BooksAPI data.
     │   ├── MockBooks.js # A JavaScript API for testing without Udacicty backend
     │   └── myreacdsConfig.js  #  Configuration of the app . 
 └── src
