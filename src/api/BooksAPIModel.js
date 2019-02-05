@@ -42,7 +42,7 @@ export const getShelf = (shelfId) => {
 export const filterWithThumbnail = (results) => {
 
     let filteredBooks = results.filter((c) => {
-        return (c.imageLinks !== undefined)
+        return (c.imageLinks !== undefined && c.authors !== undefined)
     })
     return filteredBooks;
 }

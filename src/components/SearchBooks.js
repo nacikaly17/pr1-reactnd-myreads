@@ -6,6 +6,7 @@ import * as BooksAPI from '../api/BooksAPI';
 import { UsedAPI } from '../api/myreadsConfig';
 import Book from './Book';
 import { mapSearchedBooks } from '../api/BooksAPIModel';
+import DebounceInput from 'react-debounce-input';
 
 class SearchBooks extends Component {
 
@@ -32,20 +33,21 @@ class SearchBooks extends Component {
             BooksAPI.search(this.state.query, UsedAPI.maxResults)
                 .then((results) => {
                     // console.log(JSON.stringify(results));
+                    if (Array.isArray(results)) {
+                        let searchdedBooks = mapSearchedBooks(this.props.books, results);
 
-                    let searchdedBooks = mapSearchedBooks(this.props.books, results);
+                        if (this.state.query === '') {
+                            this.setState(() => ({
+                                searchdedBooks: []
+                            }))
+                        }
+                        else {
+                            this.setState(() => ({
+                                searchdedBooks: searchdedBooks
+                            }))
+                        }
 
-                    if (this.state.query === '') {
-                        this.setState(() => ({
-                            searchdedBooks: []
-                        }))
                     }
-                    else {
-                        this.setState(() => ({
-                            searchdedBooks: searchdedBooks
-                        }))
-                    }
-
                 });
         } catch (error) {
             console.log(error);
@@ -61,12 +63,14 @@ class SearchBooks extends Component {
         if (query !== '') {
             this.searchBooks();
         }
+
         return (
             <div className="search-books">
                 <div className="search-books-bar">
                     <Link className='close-search' to='/'>Close</Link>
                     <div className="search-books-input-wrapper">
-                        <input
+                        <DebounceInput
+                            debounceTimeout={1000}
                             type="text"
                             placeholder="Search by title or author"
                             value={query}
